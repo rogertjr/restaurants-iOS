@@ -9,9 +9,11 @@ import Foundation
 @testable import RestaurantDomain
 
 final class NetworkClientSpy: NetworkClient {
-    private (set) var urlRequest: URL?
+    // MARK: - Properties
+    private (set) var urlRequest: [URL] = []
     
+    // MARK: - Methods
     func request(from url: URL) {
-        urlRequest = url
+        urlRequest.append(url)
     }
 }

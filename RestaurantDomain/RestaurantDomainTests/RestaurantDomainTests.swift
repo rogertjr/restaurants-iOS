@@ -19,6 +19,21 @@ final class RestaurantDomainTests: XCTestCase {
         sut.load()
         
         XCTAssertNotNil(client.urlRequest)
-        XCTAssertEqual(client.urlRequest, anyURL)
+        XCTAssertEqual(client.urlRequest, [anyURL])
+        XCTAssertEqual(client.urlRequest.count, 1)
+    }
+    
+    func testLoadRemoteRestauranteLoaderTwice() throws {
+        let stringURL = "https://comitando.com.br"
+        let anyURL = try XCTUnwrap(URL(string: stringURL))
+        let client = NetworkClientSpy()
+        let sut = RemoteRestaurantLoader(anyURL, networkClient: client)
+        
+        sut.load()
+        sut.load()
+        
+        XCTAssertNotNil(client.urlRequest)
+        XCTAssertEqual(client.urlRequest, [anyURL, anyURL])
+        XCTAssertEqual(client.urlRequest.count, 2)
     }
 }

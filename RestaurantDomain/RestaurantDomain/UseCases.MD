@@ -15,3 +15,12 @@
 
 #### Sem conectividade - caminho triste:
 1. O sistema entrega um erro.
+
+
+### Caso de Uso de Erro
+
+#### Sem conectividade - caminho triste:
+    1. O sistema entrega um erro.
+    
+#### Dados inválidos - caminho triste:
+    1. O sistema entrega um erro.
