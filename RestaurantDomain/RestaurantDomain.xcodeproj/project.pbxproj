@@ -13,6 +13,7 @@
 		378846EA2991C3780028D158 /* UseCase.MD in Resources */ = {isa = PBXBuildFile; fileRef = 378846E92991C3780028D158 /* UseCase.MD */; };
 		378846EC2991C3E60028D158 /* RemoteRestaurantLoader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378846EB2991C3E60028D158 /* RemoteRestaurantLoader.swift */; };
 		378846EE2991C49F0028D158 /* NetworkClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378846ED2991C49F0028D158 /* NetworkClient.swift */; };
+		378846F12991C81B0028D158 /* NetworkClientSpy.swift in Sources */ = {isa = PBXBuildFile; fileRef = 378846F02991C81B0028D158 /* NetworkClientSpy.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -33,6 +34,7 @@
 		378846E92991C3780028D158 /* UseCase.MD */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = UseCase.MD; sourceTree = "<group>"; };
 		378846EB2991C3E60028D158 /* RemoteRestaurantLoader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RemoteRestaurantLoader.swift; sourceTree = "<group>"; };
 		378846ED2991C49F0028D158 /* NetworkClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkClient.swift; sourceTree = "<group>"; };
+		378846F02991C81B0028D158 /* NetworkClientSpy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkClientSpy.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -86,9 +88,18 @@
 		378846DD2991C33F0028D158 /* RestaurantDomainTests */ = {
 			isa = PBXGroup;
 			children = (
+				378846EF2991C80B0028D158 /* Spy */,
 				378846DE2991C33F0028D158 /* RestaurantDomainTests.swift */,
 			);
 			path = RestaurantDomainTests;
+			sourceTree = "<group>";
+		};
+		378846EF2991C80B0028D158 /* Spy */ = {
+			isa = PBXGroup;
+			children = (
+				378846F02991C81B0028D158 /* NetworkClientSpy.swift */,
+			);
+			path = Spy;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -211,6 +222,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				378846F12991C81B0028D158 /* NetworkClientSpy.swift in Sources */,
 				378846DF2991C33F0028D158 /* RestaurantDomainTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
