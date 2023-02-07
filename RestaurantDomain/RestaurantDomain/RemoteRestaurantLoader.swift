@@ -27,15 +27,17 @@ final class RemoteRestaurantLoader {
     
     // MARK: - Methods
     func load(completion: @escaping (RemoteRestaurantLoader.RemoteRestaurantLoaderResult) -> Void) {
-        let okResponse = okResponse
-        networkClient.request(from: url) { result in
+        networkClient.request(from: url) { [weak self] result in
+            guard let self else { return }
             switch result  {
             case let .success((data, response)):
-                guard let json = try? JSONDecoder().decode(RestaurantItems.self, from: data), response.statusCode == okResponse else {
+                guard let json = try? JSONDecoder().decode(RestaurantItems.self, from: data), response.statusCode == self.okResponse else {
                     return completion(.failure(.invalidData))
                 }
+                
                 completion(.success(json.items))
-            case .failure: completion(.failure(.connectivity))
+            case .failure:
+                completion(.failure(.connectivity))
             }
         }
     }

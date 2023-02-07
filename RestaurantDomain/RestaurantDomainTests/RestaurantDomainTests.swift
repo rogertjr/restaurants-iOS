@@ -13,7 +13,7 @@ final class RestaurantDomainTests: XCTestCase {
     let stringURL = "https://comitando.com.br"
     
     // MARK: - SUT Factory
-    private func makeSUT() throws -> (
+    private func makeSUT(file: StaticString = #filePath, line: UInt = #line) throws -> (
         sut: RemoteRestaurantLoader,
         client: NetworkClientSpy,
         anyURL: URL
@@ -21,6 +21,8 @@ final class RestaurantDomainTests: XCTestCase {
         let anyURL = try XCTUnwrap(URL(string: stringURL))
         let client = NetworkClientSpy()
         let sut = RemoteRestaurantLoader(anyURL, networkClient: client)
+        trackForMemoryLeaks(client, file: file, line: line)
+        trackForMemoryLeaks(sut, file: file, line: line)
         return (sut, client, anyURL)
     }
     
@@ -28,7 +30,31 @@ final class RestaurantDomainTests: XCTestCase {
         return Data("{ \"items\": [] }".utf8)
     }
     
+    private func trackForMemoryLeaks(_ instance: AnyObject, file: StaticString = #filePath, line: UInt = #line) {
+        addTeardownBlock { [weak instance] in
+            XCTAssertNil(instance, "The instance should've been dealocated, possible memory leak", file: file, line: line)
+        }
+    }
+    
     // MARK: - Tests
+    func testLoadNotReutnedAfterSutDeallocated() throws {
+        let anyURL = try XCTUnwrap(URL(string: stringURL))
+        let client = NetworkClientSpy()
+        var sut: RemoteRestaurantLoader? = RemoteRestaurantLoader(anyURL, networkClient: client)
+        
+        var returnedResult: RemoteRestaurantLoader.RemoteRestaurantLoaderResult?
+        
+        sut?.load { result in
+            returnedResult = result
+        }
+        
+        sut = nil
+        
+        client.completionWithSuccess()
+        
+        XCTAssertNil(returnedResult)
+    }
+    
     func testInitializerRemoteRestauranteLoaderAndValidateURLRequest() throws {
         let (sut, client, anyURL) = try makeSUT()
         
