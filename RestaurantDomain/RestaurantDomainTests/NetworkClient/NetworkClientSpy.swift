@@ -6,7 +6,7 @@
 //
 
 import Foundation
-@testable import RestaurantDomain
+import RestaurantDomain
 
 final class NetworkClientSpy: NetworkClient {
     // MARK: - Properties
