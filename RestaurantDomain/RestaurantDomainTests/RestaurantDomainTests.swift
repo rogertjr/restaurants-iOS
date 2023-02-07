@@ -16,7 +16,7 @@ final class RestaurantDomainTests: XCTestCase {
         let client = NetworkClientSpy()
         let sut = RemoteRestaurantLoader(anyURL, networkClient: client)
         
-        sut.load()
+        sut.load() { _ in }
         
         XCTAssertNotNil(client.urlRequest)
         XCTAssertEqual(client.urlRequest, [anyURL])
@@ -29,11 +29,30 @@ final class RestaurantDomainTests: XCTestCase {
         let client = NetworkClientSpy()
         let sut = RemoteRestaurantLoader(anyURL, networkClient: client)
         
-        sut.load()
-        sut.load()
+        sut.load() { _ in }
+        sut.load() { _ in }
         
         XCTAssertNotNil(client.urlRequest)
         XCTAssertEqual(client.urlRequest, [anyURL, anyURL])
         XCTAssertEqual(client.urlRequest.count, 2)
+    }
+    
+    func testLoadRemoteRestauranteLoaderReturnedErrorForConnectivity() throws {
+        let expectation = expectation(description: "Waiting error closure return")
+        let stringURL = "https://comitando.com.br"
+        let anyURL = try XCTUnwrap(URL(string: stringURL))
+        let client = NetworkClientSpy()
+        let sut = RemoteRestaurantLoader(anyURL, networkClient: client)
+        
+        var returnedError: Error?
+        
+        sut.load { error in
+            returnedError = error
+            expectation.fulfill()
+        }
+        
+        XCTAssertNotNil(returnedError)
+        
+        wait(for: [expectation], timeout: 1.0)
     }
 }

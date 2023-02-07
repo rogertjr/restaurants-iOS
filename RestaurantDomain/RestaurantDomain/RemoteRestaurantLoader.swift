@@ -19,7 +19,9 @@ final class RemoteRestaurantLoader {
     }
     
     // MARK: - Methods
-    func load() {
-        networkClient.request(from: url)
+    func load(completion: @escaping (Error) -> Void) {
+        networkClient.request(from: url) { error in
+            completion(error)
+        }
     }
 }

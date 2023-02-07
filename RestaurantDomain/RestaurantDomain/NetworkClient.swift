@@ -8,5 +8,5 @@
 import Foundation
 
 protocol NetworkClient {
-    func request(from url: URL)
+    func request(from url: URL, completion: @escaping (Error) -> Void)
 }

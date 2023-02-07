@@ -13,7 +13,12 @@ final class NetworkClientSpy: NetworkClient {
     private (set) var urlRequest: [URL] = []
     
     // MARK: - Methods
-    func request(from url: URL) {
+    func request(from url: URL, completion: @escaping (Error) -> Void) {
         urlRequest.append(url)
+        completion(anyError())
+    }
+    
+    private func anyError() -> Error {
+        return NSError(domain: "any erro", code: -1)
     }
 }
