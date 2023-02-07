@@ -24,6 +24,10 @@ final class RestaurantDomainTests: XCTestCase {
         return (sut, client, anyURL)
     }
     
+    private func emptyData() -> Data {
+        return Data("{ \"items\": [] }".utf8)
+    }
+    
     // MARK: - Tests
     func testInitializerRemoteRestauranteLoaderAndValidateURLRequest() throws {
         let (sut, client, anyURL) = try makeSUT()
@@ -50,7 +54,7 @@ final class RestaurantDomainTests: XCTestCase {
         let expectation = expectation(description: "Waiting error closure return")
         let (sut, client,  _) = try makeSUT()
         
-        var returnedResult: RemoteRestaurantLoader.Error?
+        var returnedResult: RemoteRestaurantLoader.RemoteRestaurantLoaderResult?
         
         sut.load { result in
             returnedResult = result
@@ -59,7 +63,7 @@ final class RestaurantDomainTests: XCTestCase {
         
         client.completionWithError()
         
-        XCTAssertEqual(returnedResult, .connectivity)
+        XCTAssertEqual(returnedResult, .failure(.connectivity))
         
         wait(for: [expectation], timeout: 1.0)
     }
@@ -68,7 +72,7 @@ final class RestaurantDomainTests: XCTestCase {
         let expectation = expectation(description: "Waiting error closure return")
         let (sut, client,  _) = try makeSUT()
         
-        var returnedResult: RemoteRestaurantLoader.Error?
+        var returnedResult: RemoteRestaurantLoader.RemoteRestaurantLoaderResult?
         
         sut.load { result in
             returnedResult = result
@@ -77,7 +81,43 @@ final class RestaurantDomainTests: XCTestCase {
         
         client.completionWithSuccess()
         
-        XCTAssertEqual(returnedResult, .invalidData)
+        XCTAssertEqual(returnedResult, .failure(.invalidData))
+        
+        wait(for: [expectation], timeout: 1.0)
+    }
+    
+    func testLoadRemoteRestauranteLoaderReturnedSuccessWithEmptyList() throws {
+        let expectation = expectation(description: "Waiting success closure return")
+        let (sut, client,  _) = try makeSUT()
+        
+        var returnedResult: RemoteRestaurantLoader.RemoteRestaurantLoaderResult?
+        
+        sut.load { result in
+            returnedResult = result
+            expectation.fulfill()
+        }
+        
+        client.completionWithSuccess(data: emptyData())
+        
+        XCTAssertEqual(returnedResult, .success([]))
+        
+        wait(for: [expectation], timeout: 1.0)
+    }
+    
+    func testLoadRemoteRestauranteLoaderReturnedErrorForInvalidStatusCode() throws {
+        let expectation = expectation(description: "Waiting error closure return")
+        let (sut, client,  _) = try makeSUT()
+        
+        var returnedResult: RemoteRestaurantLoader.RemoteRestaurantLoaderResult?
+        
+        sut.load { result in
+            returnedResult = result
+            expectation.fulfill()
+        }
+        
+        client.completionWithSuccess(201, data: emptyData())
+        
+        XCTAssertEqual(returnedResult, .failure(.invalidData))
         
         wait(for: [expectation], timeout: 1.0)
     }
