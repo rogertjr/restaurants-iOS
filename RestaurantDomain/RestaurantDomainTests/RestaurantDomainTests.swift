@@ -26,6 +26,28 @@ final class RestaurantDomainTests: XCTestCase {
         return (sut, client, anyURL)
     }
     
+    private func assert(
+        _ sut: RemoteRestaurantLoader,
+        description: String,
+        completion result: RemoteRestaurantLoader.RemoteRestaurantLoaderResult,
+        when action: () -> Void,
+        file: StaticString = #filePath,
+        line: UInt = #line
+    ) {
+        let expectation = expectation(description: description)
+        var returnedResult: RemoteRestaurantLoader.RemoteRestaurantLoaderResult?
+        
+        sut.load { result in
+            returnedResult = result
+            expectation.fulfill()
+        }
+        
+        action()
+
+        XCTAssertEqual(returnedResult, result)
+        wait(for: [expectation], timeout: 1.0)
+    }
+    
     private func emptyData() -> Data {
         return Data("{ \"items\": [] }".utf8)
     }
@@ -77,74 +99,33 @@ final class RestaurantDomainTests: XCTestCase {
     }
     
     func testLoadRemoteRestauranteLoaderReturnedErrorForConnectivity() throws {
-        let expectation = expectation(description: "Waiting error closure return")
         let (sut, client,  _) = try makeSUT()
-        
-        var returnedResult: RemoteRestaurantLoader.RemoteRestaurantLoaderResult?
-        
-        sut.load { result in
-            returnedResult = result
-            expectation.fulfill()
+        assert(sut, description: "Waiting error closure return", completion: .failure(.connectivity)) {
+            client.completionWithError()
         }
-        
-        client.completionWithError()
-        
-        XCTAssertEqual(returnedResult, .failure(.connectivity))
-        
-        wait(for: [expectation], timeout: 1.0)
     }
     
     func testLoadRemoteRestauranteLoaderReturnedErrorForInvalidData() throws {
-        let expectation = expectation(description: "Waiting error closure return")
         let (sut, client,  _) = try makeSUT()
-        
-        var returnedResult: RemoteRestaurantLoader.RemoteRestaurantLoaderResult?
-        
-        sut.load { result in
-            returnedResult = result
-            expectation.fulfill()
+
+        assert(sut, description: "Waiting error closure return", completion: .failure(.invalidData)) {
+            client.completionWithSuccess()
         }
-        
-        client.completionWithSuccess()
-        
-        XCTAssertEqual(returnedResult, .failure(.invalidData))
-        
-        wait(for: [expectation], timeout: 1.0)
     }
     
     func testLoadRemoteRestauranteLoaderReturnedSuccessWithEmptyList() throws {
-        let expectation = expectation(description: "Waiting success closure return")
         let (sut, client,  _) = try makeSUT()
         
-        var returnedResult: RemoteRestaurantLoader.RemoteRestaurantLoaderResult?
-        
-        sut.load { result in
-            returnedResult = result
-            expectation.fulfill()
+        assert(sut, description: "Waiting success closure return", completion: .success([])) {
+            client.completionWithSuccess(data: emptyData())
         }
-        
-        client.completionWithSuccess(data: emptyData())
-        
-        XCTAssertEqual(returnedResult, .success([]))
-        
-        wait(for: [expectation], timeout: 1.0)
     }
     
     func testLoadRemoteRestauranteLoaderReturnedErrorForInvalidStatusCode() throws {
-        let expectation = expectation(description: "Waiting error closure return")
         let (sut, client,  _) = try makeSUT()
-        
-        var returnedResult: RemoteRestaurantLoader.RemoteRestaurantLoaderResult?
-        
-        sut.load { result in
-            returnedResult = result
-            expectation.fulfill()
+
+        assert(sut, description: "Waiting error closure return", completion: .failure(.invalidData)) {
+            client.completionWithSuccess(201, data: emptyData())
         }
-        
-        client.completionWithSuccess(201, data: emptyData())
-        
-        XCTAssertEqual(returnedResult, .failure(.invalidData))
-        
-        wait(for: [expectation], timeout: 1.0)
     }
 }
