@@ -12,6 +12,11 @@ final class RemoteRestaurantLoader {
     let url: URL
     let networkClient: NetworkClient
     
+    enum Error: Swift.Error {
+        case connectivity
+        case invalidData
+    }
+    
     // MARK: - Init
     init(_ url: URL, networkClient: NetworkClient) {
         self.url = url
@@ -19,9 +24,12 @@ final class RemoteRestaurantLoader {
     }
     
     // MARK: - Methods
-    func load(completion: @escaping (Error) -> Void) {
-        networkClient.request(from: url) { error in
-            completion(error)
+    func load(completion: @escaping (RemoteRestaurantLoader.Error) -> Void) {
+        networkClient.request(from: url) { state in
+            switch state {
+            case .success: completion(.invalidData)
+            case .error: completion(.connectivity)
+            }
         }
     }
 }

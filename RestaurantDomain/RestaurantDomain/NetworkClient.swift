@@ -7,6 +7,11 @@
 
 import Foundation
 
+enum NetworkState {
+    case success
+    case error(Error)
+}
+
 protocol NetworkClient {
-    func request(from url: URL, completion: @escaping (Error) -> Void)
+    func request(from url: URL, completion: @escaping (NetworkState) -> Void)
 }

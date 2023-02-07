@@ -11,14 +11,23 @@ import Foundation
 final class NetworkClientSpy: NetworkClient {
     // MARK: - Properties
     private (set) var urlRequest: [URL] = []
+    private (set) var completionHandler: ((NetworkState) -> Void)?
     
     // MARK: - Methods
-    func request(from url: URL, completion: @escaping (Error) -> Void) {
+    func request(from url: URL, completion: @escaping (NetworkState) -> Void) {
         urlRequest.append(url)
-        completion(anyError())
+        completionHandler = completion
+    }
+    
+    func completionWithError() {
+        completionHandler?(.error(anyError()))
+    }
+    
+    func completionWithSuccess() {
+        completionHandler?(.success)
     }
     
     private func anyError() -> Error {
-        return NSError(domain: "any erro", code: -1)
+        return NSError(domain: "Any Error", code: -1)
     }
 }
