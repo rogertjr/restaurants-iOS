@@ -15,17 +15,25 @@ final class URLSessionSpy: URLSession {
     struct Stub {
         let tasks: URLSessionDataTask
         let error: Error?
+        let data: Data?
+        let response: HTTPURLResponse?
     }
     
     // MARK: - Helpers
-    func stub(_ url: URL, task: URLSessionDataTask, error: Error? = nil) {
-        stubs[url] = Stub(tasks: task, error: error)
+    func stub(
+        _ url: URL,
+        task: URLSessionDataTask,
+        error: Error? = nil,
+        data: Data? = nil,
+        response: HTTPURLResponse? = nil
+    ) {
+        stubs[url] = Stub(tasks: task, error: error, data: data, response: response)
     }
     
     // MARK: - Overrides
     override func dataTask(with url: URL, completionHandler: @escaping (Data?, URLResponse?, Error?) -> Void) -> URLSessionDataTask {
         guard let stub = stubs[url] else { return FakeURLSessionDataTask() }
-        completionHandler(nil, nil, stub.error)
+        completionHandler(stub.data, stub.response, stub.error)
         
         return stub.tasks
     }

@@ -52,12 +52,6 @@ final class RestaurantDomainTests: XCTestCase {
         return Data("{ \"items\": [] }".utf8)
     }
     
-    private func trackForMemoryLeaks(_ instance: AnyObject, file: StaticString = #filePath, line: UInt = #line) {
-        addTeardownBlock { [weak instance] in
-            XCTAssertNil(instance, "The instance should've been dealocated, possible memory leak", file: file, line: line)
-        }
-    }
-    
     // MARK: - Tests
     func testLoadNotReutnedAfterSutDeallocated() throws {
         let anyURL = try XCTUnwrap(URL(string: stringURL))
